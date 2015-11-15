@@ -1,0 +1,24 @@
+pecific to RubyMotion:
+.dat*
+.repl_history
+build/
+
+## Documentation cache and generated files:
+/.yardoc/
+/_yardoc/
+/doc/
+/rdoc/
+
+## Environment normalisation:
+/.bundle/
+/vendor/bundle
+/lib/bundler/man/
+
+parser.rb
+.DS_Store
+sampl*
+PatientReport_20151028.PDF
+parse.rb
+pdf.pdf
+thing.html
+Dr*
