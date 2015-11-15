@@ -1,0 +1,21 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    Ascii85 (1.0.2)
+    awesome_print (1.6.1)
+    byebug (8.2.0)
+    pdf-reader (1.1.1)
+      Ascii85 (~> 1.0.0)
+      ruby-rc4
+    ruby-rc4 (0.1.5)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  awesome_print
+  byebug
+  pdf-reader (= 1.1.1)
+
+BUNDLED WITH
+   1.10.0
