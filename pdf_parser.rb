@@ -8,7 +8,6 @@ class PdfParser
     # @file = 'PatientReport_20151028.PDF'
     @file = ARGV.empty? ? "PatientReport_20151028.PDF" : ARGV[0]
     individualized_and_mapped_records_array = build_data_hashes_from_records
-    individualized_and_mapped_records_array[individualized_and_mapped_records_array.count - 2][:patient_number] = individualized_and_mapped_records_array.last[:patient_number] 
     unique_records = unique(individualized_and_mapped_records_array)
     byebug
     dump_records_to_csv(individualized_and_mapped_records_array)
@@ -18,18 +17,18 @@ class PdfParser
     records_array = []
     records.map do |record|
       account_info = (record.match(/(?<= Accounts:).*?(?<= NumberGuarantorAcct\sFinance\sGrpDefaultStatusBalance)(.*)\Z/xim).captures[0] rescue nil)
-      ins_policy = (account_info.match(/(?= Ins\sPolicies:)(.*)\Z)/xim).captures[0] rescue nil)
+      ins_policy = (account_info.match(/(?= Ins\sPolicies:)(.*)\Z/xim).captures[0] rescue nil)
       byebug
       records_array <<
         {
           accounts:           {
-                                (account_finance_grp: account_info.match(//).captures[0] rescue nil),
-                                (balance: account_info.match(/(?= \d*.*?[A-Z]{2})(\d*\.?\d*)\n(?= Ins\.\sPolicies:)/xm).captures[0] rescue nil),
-                                (default: account_info.match(/[Y|N]{1}/).captures[0] rescue nil),
-                                (guarantor: account_info.match(/\A\d*(.*?)[A-Z]{2}/) rescue nil),
-                                (number: account_info.match(/\A(\d*)\w/).captures[0] rescue nil),
-                                (status: account_info.match(//).captures[0] rescue nil)
-                              },
+                                account_finance_grp:   (account_info.match(/\w([A-Z]{2,})([A-Z]\s+|[A-Z]{2}.*)\d*\.\d*/).captures[0] rescue nil),
+                                balance:               (account_info.match(/(\d*\.\d*)((?= \\nIns\.\sPolicies:)|\Z)/xm).captures[0] rescue nil),
+                                default:               (account_info.match(/(Y|N)[A-Z][a-z]*\d*\.\d*/).captures[0] rescue nil),
+                                guarantor:             (account_info.match(/\A\d*(.*?)[A-Z]{2}/) rescue nil),
+                                number:                (account_info.match(/\A(\d*)\w/).captures[0] rescue nil),
+                                status:                (account_info.match(/([A-Z][a-z]*)\d+\.\d*/).captures[0] rescue nil)
+          },
           address:            (record.match(/(?<= Status:).*?\n(.*?)(?= Chart\s\#:).*\n(.*?\d{5})(?= Registered:)?/xi).captures.join(' ') rescue nil), 
           assigned:           (record.match(/assigned:(.*?)Work/i).captures[0] rescue nil),
           chart_num:          (record.match(/Chart #:\s*(.*)DOB/).captures[0] rescue nil),
@@ -44,14 +43,14 @@ class PdfParser
           first_visit:        (record.match(/First\sVisit:\s*(\d{1,2}\/\d{1,2}\/\d{2,4})/xm).captures[0] rescue nil),
           home:               (record.match(/(?<= Home:)\s*\((\d{3})\)\s(\d{3})-(\d{4})/xm).captures.join('') rescue nil),
           ins_policies:       {
-                                (accept_assign:         ins_policy.match(//).captures[0] rescue nil),
-                                (group:                 ins_policy.match(//).captures[0] rescue nil),
-                                (plan:                  ins_policy.match(//).captures[0] rescue nil),
-                                (claim_member_ids:      ins_policy.match(//).captures[0] rescue nil),
-                                (relation_to_sub:       ins_policy.match(//).captures[0] rescue nil),
-                                (status:                ins_policy.match(//).captures[0] rescue nil),
-                                (subscriber:            ins_policy.match(//).captures[0] rescue nil)
-                              }
+                                accept_assign:         (ins_policy.match(//).captures[0] rescue nil),
+                                group:                 (ins_policy.match(//).captures[0] rescue nil),
+                                plan:                  (ins_policy.match(//).captures[0] rescue nil),
+                                claim_member_ids:      (ins_policy.match(//).captures[0] rescue nil),
+                                relation_to_sub:       (ins_policy.match(//).captures[0] rescue nil),
+                                status:                (ins_policy.match(//).captures[0] rescue nil),
+                                subscriber:            (ins_policy.match(//).captures[0] rescue nil)
+                              },
           lang:               (record.match(/Lang:\s*(.*)/xi).captures[0] rescue nil),
           last_visit:         (record.match(/last visit:\s*(\d{1,2}\/\d{1,2}\/\d{2,4})/i).captures[0] rescue nil),
           marital:            (record.match(/Marital:\s*(\w*)/i).captures[0] rescue nil),
